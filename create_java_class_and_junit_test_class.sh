@@ -28,6 +28,7 @@ class_file(){
 
         public class $1{
         }" >> src/main/java/$model/$1.java
+        echo "class ${arguments[$i]} created"
     else
         if [[ -f "src/main/java/$1.java" ]]; then
             echo "$1.java already exists"
@@ -35,13 +36,14 @@ class_file(){
         fi
         echo "public class $1{
         }" >> src/main/java/$1.java
+        echo "class ${arguments[$i]} created"
     fi
 }
 
 test_file(){
     if [[ -n ${model+1} ]];then
         [ ! -d "src/test/java/$model" ] && mkdir -p src/test/java/$model
-        if [[ -f "src/test/java/$model/$1.java" ]]; then
+        if [[ -f "src/test/java/$model/$1Test.java" ]]; then
             return;
         fi
         echo "package $model;
@@ -49,16 +51,18 @@ test_file(){
 import static org.junit.jupiter.api.Assertions.*;
 
         public class $1Test{
-        }" >> src/test/java/$model/$1.java
+        }" >> src/test/java/$model/$1Test.java
+        echo "testclass ${arguments[$i]} created"
     else
-        if [[ -f "src/test/java/$1.java" ]]; 
-         echo "$1Test.java already exists"
+        if [[ -f "src/test/java/$1Test.java" ]]; then
+            echo "$1Test.java already exists"
             return;
         fi
         echo "import static org.junit.jupiter.api.Assertions.*;
 
         public class $1{
-        }" >> src/test/java/$1.java
+        }" >> src/test/java/$1Test.java
+        echo "testclass ${arguments[$i]} created"
     fi
 }
 
@@ -66,7 +70,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 if [ -f pom.xml ];then
     for ((i = 0 ; i < ${#arguments[@]} ; i++)) ;do
-        echo ${arguments[$i]}
+        
         [[ ${arguments[$i]:0:1} == - ]] && break
         class_file ${arguments[$i]}
         test_file ${arguments[$i]}
